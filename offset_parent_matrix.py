@@ -1,7 +1,7 @@
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
 
-def offset_parent_matrix():
+def offsetParentMatrix():
 #This script bakes Transform of node(eg: Nurbscurve_Ctrl) to its Offset Parent Matrix which then acts as its rest matrix. Credit to Muream @gitHubGist 
 
     TRANSFORM_NODETYPES = ["transform", "joint"]

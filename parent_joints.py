@@ -7,22 +7,31 @@ import joints_select as js
 importlib.reload(opm)
 importlib.reload(js)
 
-print(js.get_joints())
-print(js.ik_rename())
-print(js.ik_rename())
+fk_joint_split_temp = []
+fk_joint_split = []
 
-'''def parent_joints():
-
+def unparent_joints():
+    AMOUNT = js.get_joints()
+    FK_JOINTS_LIST = js.fk_list()
+    IK_JOINTS_LIST = js.ik_list()
+    print(AMOUNT)
+    print("fk",FK_JOINTS_LIST)
+    print("ik",IK_JOINTS_LIST)
+    
     for i in range(AMOUNT):
+        #print(FK_JOINTS_LIST[i])
+        fk_joint_split_temp = FK_JOINTS_LIST[i].split("_")[2]
+        fk_joint_split.append(fk_joint_split_temp)
+    print(fk_joint_split)
+    
+    '''for x in range(AMOUNT):
+        cmds.parent(FK_JOINTS_LIST[fk_joint_split.index("shoulder")], w=True)'''
+    '''for i in range(AMOUNT):
         cmds.select(FK_JOINTS_LIST[i], r=True)
-        opm.offset_parent_matrix()
+        print(FK_JOINTS_LIST[i])
+        opm.offsetParentMatrix()'''
     
-    #IK_JOINTS_LIST.reverse()
-    FK_JOINTS_LIST.reverse()
-
     
-    amount_parent = AMOUNT - 1
-    
-    for i in range(amount_parent):
-        cmds.parent(IK_JOINTS_LIST[i],IK_JOINTS_LIST[i+1])
+    '''for i in range(amount_parent):
+        #cmds.parent(IK_JOINTS_LIST[i],IK_JOINTS_LIST[i+1])
         cmds.parent(FK_JOINTS_LIST[i],FK_JOINTS_LIST[i+1])'''

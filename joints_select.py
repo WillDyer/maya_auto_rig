@@ -1,84 +1,67 @@
+import importlib
 import maya.cmds as cmds
-global ik_joints_list
-global fk_joints_list
-joints_list = []
-ik_joints = []
-fk_joints = []
-ik_joints_list = []
-ik_joints_temp_list = []
-fk_joints_list = []
-fk_joints_temp_list = []
-nameList = []
+import config
 
-top_joint = cmds.ls(sl=True, typ='joint')
+importlib.reload(config)
 
-def get_joints():
-    global joints_list
-    joints_list = cmds.listRelatives(top_joint,ad=True, typ='joint')
-    joints_list.append(top_joint[0])
-    joints_list.reverse()
-    
-    global amount
-    amount = len(joints_list)
-    return amount
-
-def duplicate_ik_fk_joints():
-    #old code for duplicating joints that arent parented
-    '''for item in joints_list:
+def duplicate_system_joints(item):
         cmds.select(item, r=True)
         cmds.joint()
         cmds.parent(w=True)
-        new_joint = cmds.ls(sl=True, typ='joint')
-        ik_joints_temp_list.append(new_joint[0])
 
-        cmds.select(item, r=True)
-        cmds.joint()
-        cmds.parent(w=True)
-        new_joint = cmds.ls(sl=True, typ='joint')
-        fk_joints_temp_list.append(new_joint[0])'''
-        
-    global ik_joints
-    global fk_joints
-    ik_joints = cmds.duplicate(top_joint,rc=True)
-    fk_joints = cmds.duplicate(top_joint,rc=True)
+class systems():
+    def __init__(self):
+        self.joints_list_split = []
+        self.temporary_list = []
+        self.joints_list_split_temp = []
+        self.ui_data = config.ui_data
+        self.system_joints = config.system_joints
 
-def ik_rename():
-    #renaming joints & creates list for each set of joints
-    print("heello",ik_joints)
-    for i in range(amount):
-        try:
-            left_or_right = "_" + joints_list[i].split("_")[3]
-        except IndexError:
-            left_or_right = ""
-        cmds.rename(ik_joints[i], 'jnt_ik_' + joints_list[i].split("_")[2] + left_or_right)
-        
-def ik_list():   
-    for i in range(amount):
-        try:
-            left_or_right = "_" + joints_list[i].split("_")[3]
-        except IndexError:
-            left_or_right = ""
-        ik_joint_temp = 'jnt_ik_' + joints_list[i].split("_")[2] + left_or_right
-        ik_joints_list.append(ik_joint_temp)
-    print("IK LIST:",ik_joints_list)
-    return ik_joints_list
+        self.split_joints()
+        self.split_systems_to_world()
+        self.create_ik_joints()
+        self.create_fk_joints()
+        self.rig_joints_back_together()
 
-def fk_rename():
-    #renaming joints & creates list for each set of joints
-    for i in range(amount):
-        try:
-            left_or_right = "_" + joints_list[i].split("_")[3]
-        except IndexError:
-            left_or_right = ""
-        cmds.rename(fk_joints[i], 'jnt_fk_' + joints_list[i].split("_")[2] + left_or_right)
+    def split_joints(self):
+        for x in self.ui_data.keys():
+            self.temporary_list = []
+            for i in self.system_joints[x]:
+                joints = str(i)
+                self.joints_list_split_temp = joints.split("_")[2]
+                self.temporary_list.append(self.joints_list_split_temp)
+            self.joints_list_split.append(self.temporary_list)
+            #print(self.joints_list_split)
+            
+        #print(f"Split Joint List: {self.joints_list_split}")
         
-def fk_list():
-    for i in range(amount):
-        try:
-            left_or_right = "_" + joints_list[i].split("_")[3]
-        except IndexError:
-            left_or_right = ""
-        fk_joint_temp = 'jnt_fk_' + joints_list[i].split("_")[2] + left_or_right
-        fk_joints_list.append(fk_joint_temp)
-    print("FK LIST:",fk_joints_list)
-    return fk_joints_list
+    def split_systems_to_world(self):
+        for x in self.ui_data.keys():
+            cmds.select(x)
+            cmds.parent(w=True)
+        
+    def create_ik_joints(self):
+        for x in self.ui_data.keys():
+            for item in self.system_joints[x]:
+                duplicate_system_joints(item)
+                new_joint = cmds.ls(sl=True, typ='joint')
+                new_name = "ik_jnt"+item[7:]
+                cmds.rename(new_joint, new_name)
+                #print(f"IK: New Joint: {new_joint}, New Joint Name: {new_name}")
+        
+    def create_fk_joints(self):
+        for x in self.ui_data.keys():
+            for item in self.system_joints[x]:
+                duplicate_system_joints(item)
+                new_joint = cmds.ls(sl=True, typ='joint')
+                new_name = "fk_jnt"+item[7:]
+                cmds.rename(new_joint, new_name)
+                #print(f"FK: New Joint: {new_joint}, New Joint Name: {new_name}")
+
+    def rig_joints_back_together(self):
+        for x in self.ui_data.keys():
+            cmds.parent(x,self.ui_data[x][3])
+            #print(f"Child: {x}, Parent: {self.ui_data[x][3]}")
+        #-cmds.parent("rig_jnt_root","grp_rig_joints")
+
+#systems()

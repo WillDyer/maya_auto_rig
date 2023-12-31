@@ -1,13 +1,11 @@
 import importlib
-import joints_select as js
-import parent_joints as pj
 
-importlib.reload(js)
-importlib.reload(pj)
+import config
+import testui as ui
+import modules_setup
 
-js.get_joints()
-js.duplicate_ik_fk_joints()
-#js.ik_rename()
-#js.fk_rename()
+importlib.reload(config)
+importlib.reload(ui)
+importlib.reload(modules_setup)
 
-pj.unparent_joints()
+main_ui = ui.main()

@@ -36,19 +36,19 @@ class combine_systems():
             cmds.createNode('reverse', n=f"{key[8:]}_ikfk_reverse")
             cmds.connectAttr(f"ctrl_COG.ikfk_switch_{key[8:]}", f"{key[8:]}_ikfk_reverse.inputX")
             for item in self.system_joints[key]:
-                #print(item)
-                cmds.connectAttr(f"ctrl_COG.ikfk_switch_{key[8:]}", f"pConst{item[7:]}.fk{item[3:]}W0")
-                cmds.connectAttr(f"{key[8:]}_ikfk_reverse.outputX", f"pConst{item[7:]}.ik{item[3:]}W1")
+                print(item)
+                cmds.connectAttr(f"ctrl_COG.ikfk_switch_{key[8:]}", f"pConst{item[7:]}.jnt_fk{item[7:]}W0")
+                cmds.connectAttr(f"{key[8:]}_ikfk_reverse.outputX", f"pConst{item[7:]}.jnt_ik{item[7:]}W1")
 
-                if not cmds.ls("ik_ctrl"+item[7:]):
+                if not cmds.ls("ctrl_ik"+item[7:]):
                     print("false")
-                elif cmds.ls("ik_ctrl"+item[7:])[0] == "ik_ctrl"+item[7:]:
-                    cmds.connectAttr(f"{key[8:]}_ikfk_reverse.outputX", f"ik_ctrl{item[7:]}.visibility")
+                elif cmds.ls("ctrl_ik"+item[7:])[0] == "ctrl_ik"+item[7:]:
+                    cmds.connectAttr(f"{key[8:]}_ikfk_reverse.outputX", f"ctrl_ik{item[7:]}.visibility")
 
-                if not cmds.ls("fk_ctrl"+item[7:]):
+                if not cmds.ls("ctrl_fk"+item[7:]):
                     print("false")
-                elif cmds.ls("fk_ctrl"+item[7:])[0] == "fk_ctrl"+item[7:]:
-                    cmds.connectAttr(f"ctrl_COG.ikfk_switch_{key[8:]}", f"fk_ctrl{item[7:]}.visibility")
+                elif cmds.ls("ctrl_fk"+item[7:])[0] == "ctrl_fk"+item[7:]:
+                    cmds.connectAttr(f"ctrl_COG.ikfk_switch_{key[8:]}", f"ctrl_fk{item[7:]}.visibility")
 
     def parent_system_to_rig(self):
         joints_list = []
@@ -65,7 +65,7 @@ class combine_systems():
         for item in (joints_list):
             #print(item)
             try:
-                cmds.parentConstraint(f"fk_jnt{item[7:]}",f"ik_jnt{item[7:]}",item, n=f"pConst{item[7:]}")
+                cmds.parentConstraint(f"jnt_fk{item[7:]}",f"jnt_ik{item[7:]}",item, n=f"pConst{item[7:]}")
             except ValueError:
                 #print(f"{item} does not have ik fk equivalent")        #for testing
                 pass

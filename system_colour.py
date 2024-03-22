@@ -2,37 +2,34 @@ import maya.cmds as cmds
 
 class colour():
     def __init__(self):
+        self.selection = "WD_Rig_Master"
         self.collect_all_ctrls()
+        #print("Coloured!")
 
     def collect_all_ctrls(self):
-        ctrls = cmds.listRelatives("WD_Rig_Master",ad=True,typ="transform")
-        print(ctrls)
+        COLOR_CONFIG = {'l': 6, 'r': 13, 'default': 22}
+        ctrls = cmds.listRelatives(self.selection, ad=True, typ="transform")
+        if ctrls is None:
+            ctrls = self.selection
         for ctrl in ctrls:
-            if ctrl == "ctrl_root_world":
-                cmds.setAttr(f"ctrl_root_worldShape.overrideEnabled", 1)
-                cmds.setAttr(f"ctrl_root_worldShape.overrideColor", 18)
-            
-            elif ctrl[3:7] == "ctrl":
-                if ctrl[-1] == "l":
+            try:
+                cmds.setAttr(f"{ctrl}.overrideEnabled", 1)
+                if ctrl == "ctrl_root_world":
+                    cmds.setAttr(f"{ctrl}.overrideColor", 18)
+                elif ctrl[:4] == "ctrl":
+                    side = ctrl[-1]
+                    #print(ctrl)
                     try:
-                        cmds.setAttr(f"{ctrl}.overrideEnabled", 1)
-                        cmds.setAttr(f"{ctrl}.overrideColor", 6)
-                    except RuntimeError:
+                        cmds.setAttr(f"{ctrl}.overrideColor",
+                                    COLOR_CONFIG[side])
+                    except KeyError:
+                        cmds.setAttr(f"{ctrl}.overrideColor",
+                                    COLOR_CONFIG['default'])
                         pass
-                elif ctrl[-1] == "r":
-                    try:
-                        cmds.setAttr(f"{ctrl}.overrideEnabled", 1)
-                        cmds.setAttr(f"{ctrl}.overrideColor", 13)
-                    except RuntimeError:
-                        pass
-            elif ctrl[:4] == "ctrl":
-                try:
-                    cmds.setAttr(f"{ctrl}.overrideEnabled", 1)
-                    cmds.setAttr(f"{ctrl}.overrideColor", 22)
-                except RuntimeError:
+                else:
+                    #cmds.warning("Curve not coloured as does not match 'ctrl' prefix")
                     pass
-            else:
+            except:
                 pass
-            
-
-#colour()
+                    
+# colour()

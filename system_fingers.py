@@ -31,10 +31,10 @@ class create_fingers():
                 finger_joints = cmds.listRelatives(self.system_joints[x][-1],ad=True, typ='joint')
                 
                 for joint in finger_joints:
-                    cmds.circle(n=f"fk_ctrl{joint[7:]}",r=1,nr=(1,0,0))
-                    cmds.matchTransform(f"fk_ctrl{joint[7:]}",joint)
+                    cmds.circle(n=f"ctrl_fk{joint[7:]}",r=1,nr=(1,0,0))
+                    cmds.matchTransform(f"ctrl_fk{joint[7:]}",joint)
                     
-                    ctrl = f"fk_ctrl{joint[7:]}"
+                    ctrl = f"ctrl_fk{joint[7:]}"
                     ctrl_list.append(ctrl)
                     
                     self.ctrl_finger_dict |= {f"{ctrl.split('_')[2]}{ctrl[-2:]}": []}
@@ -68,7 +68,7 @@ class create_fingers():
     def parent_constranit(self):
         for key in self.ctrl_finger_dict.keys():
             for item in self.ctrl_finger_dict[key]:
-                cmds.parentConstraint(item, f"rig_jnt{item[7:]}")
+                cmds.parentConstraint(item, f"jnt_rig{item[7:]}")
 
     def offset_parent_matrix(self):
         for key in self.ctrl_finger_dict.keys():
@@ -80,9 +80,9 @@ class create_fingers():
         for key in self.ctrl_finger_dict.keys():
             cmds.parent(self.ctrl_finger_dict[key][-1], f"grp_ctrl_fingers{end_joint_arm}")
         cmds.parent(f"grp_ctrl_fingers{end_joint_arm}", "grp_clav_rotate")
-        cmds.parentConstraint(f"fk_ctrl{end_joint_arm}", f"ik_ctrl{end_joint_arm}", f"grp_ctrl_fingers{end_joint_arm}",n=f"pConst_grp_ctrl_fingers{end_joint_arm}")
-        cmds.connectAttr(f"ctrl_COG.ikfk_switch{top_joint_arm}",f"pConst_grp_ctrl_fingers{end_joint_arm}.fk_ctrl{end_joint_arm}W0")
-        cmds.connectAttr(f"{top_joint_arm[1:]}_ikfk_reverse.outputX",f"pConst_grp_ctrl_fingers{end_joint_arm}.ik_ctrl{end_joint_arm}W1")
+        cmds.parentConstraint(f"ctrl_fk{end_joint_arm}", f"ctrl_ik{end_joint_arm}", f"grp_ctrl_fingers{end_joint_arm}",n=f"pConst_grp_ctrl_fingers{end_joint_arm}")
+        cmds.connectAttr(f"ctrl_COG.ikfk_switch{top_joint_arm}",f"pConst_grp_ctrl_fingers{end_joint_arm}.ctrl_fk{end_joint_arm}W0")
+        cmds.connectAttr(f"{top_joint_arm[1:]}_ikfk_reverse.outputX",f"pConst_grp_ctrl_fingers{end_joint_arm}.ctrl_ik{end_joint_arm}W1")
         
 
 #create_fingers()

@@ -20,8 +20,8 @@ class parenting_created_joints():
                 for x in self.system_joints.keys(): #runs the parent system for each join system in the ui data
                     for i in range(len(self.system_joints[x])): #runs the parent system for each joint in joint heirachy
                         try:
-                            child = sys + "_jnt" + self.system_joints[x][i+1][7:]
-                            parent = sys + "_jnt" + self.system_joints[x][i][7:]
+                            child = "jnt_" + sys + self.system_joints[x][i+1][7:]
+                            parent = "jnt_" + sys + self.system_joints[x][i][7:]
                             parent_operation(child, parent)
                         except IndexError:
                             pass
